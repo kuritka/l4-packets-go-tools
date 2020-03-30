@@ -6,23 +6,22 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
-var (
 
-	filter = "tcp and port 80"
-	devfound = false
-)
-
+type Handler =  func(gopacket.Packet) error
 
 type capture struct {
-	options CaptureOptions
+	options Options
 	snaplen int32
+	filter  string
+	handler Handler
 }
 
-
-func New(options CaptureOptions) *capture{
+func New(options Options, f Handler) *capture{
 	 capture := new(capture)
 	 capture.options = options
 	 capture.snaplen = 1600
+	 capture.filter = "tcp and port 80"
+	 capture.handler = f
 	 return capture
 }
 
@@ -39,16 +38,21 @@ func (c *capture) Run() error {
 	}
 	defer handle.Close()
 
-	if err := handle.SetBPFFilter("tcp and port 80"); err != nil {
+	if err := handle.SetBPFFilter(c.options.Filter); err != nil {
 		return err
 	}
 
 	source := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range source.Packets() {
-		fmt.Println(packet.String())
+		if err := c.handler(packet); err != nil {
+			return err
+		}
 	}
 	return nil
 }
+
+
+
 
 func deviceExists(iface string) bool {
 	devices, err := pcap.FindAllDevs()
