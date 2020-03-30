@@ -11,7 +11,7 @@ var (
 
 
 var captureCmd = &cobra.Command{
-	Use:   "capture",
+	Use:   "listen",
 	Short: "live capturing",
 	Long: `live capturing`,
 
@@ -25,6 +25,6 @@ var captureCmd = &cobra.Command{
 }
 
 func init(){
-	captureCmd.Flags().StringVarP(&captureOptions.NetworkInterface, "interface", "i", "", "network interface")
+	captureCmd.Flags().StringVarP(&captureOptions.NetworkInterface, "interface", "i", "", "network interface;`packet devices` to list all available network interfaces")
 	rootCmd.AddCommand(captureCmd)
 }

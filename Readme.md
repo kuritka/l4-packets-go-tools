@@ -30,7 +30,7 @@ one of interface is your primary and listening on localhost. In my example it is
 
 **Terminal1**
 ```bash
-sudo $GOBIN/packets capture -i lo
+sudo $GOBIN/packets listen -i lo
 ```
 
 **Terminal2**
